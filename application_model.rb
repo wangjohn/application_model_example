@@ -8,24 +8,26 @@ module ActiveRecord
 
       def initialize(ordered_options = nil)
         @ordered_options = ordered_options || create_defaults
+        @subclasses = Hash.new { |h,k| h[k] = Hash.new() }
       end
 
-      def method_missing(name, *args)
-        self.class.create_accessor(name)
-        send(name, *args)
+      def get(name, options = {})
+        if subclass = options[:subclass]
+          @subclasses[subclass][name] || @ordered_options[name]
+        else
+          @ordered_options[name]
+        end
       end
 
-      def respond_to_missing?(name, include_private)
-        true
+      def set(name, value, options = {})
+        if subclass = options[:subclass]
+          @subclasses[subclass][name] = value
+        else
+          @ordered_options[name] = value
+        end
       end
 
       private
-
-        def self.create_accessor(name)
-          define_method(name) do |*args|
-            @ordered_options.send(name, *args)
-          end
-        end
 
         def create_defaults
           ActiveSupport::InheritableOptions.new(

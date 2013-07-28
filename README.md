@@ -7,8 +7,8 @@ For prototyping the ApplicationModel class.
 
 There will be a helper class inside of Active Support which defines two methods:
 
-    configuration_accessor
-    configuration_class_accessor
+    config_mattr_accessor
+    config_class_attribute
 
 These two methods will replace `mattr_accessor` and `class_attribute` respectively.
 These methods will will delegate all accesses to a particular configuration
@@ -22,7 +22,7 @@ the fake Active Record. For example, let's say you want to make a new configurat
 
 ```ruby
 class MyClass
-  configuration_accessor :time_zone
+  config_mattr_accessor :time_zone
   self.time_zone = :utc
 end
 
@@ -36,12 +36,12 @@ MyClass.time_zone     # => :pst
 
 ### Class Methods
 
-The `configuration_accessor` method creates what is equivalent to a class variable.
+The `config_mattr_accessor` method creates what is equivalent to a class variable.
 You can access it and change it like so:
 
 ```ruby
 class MyClass
-  configuration_accessor :time_zone
+  config_mattr_accessor :time_zone
   self.time_zone = :utc
 end
 
@@ -50,13 +50,13 @@ MyClass.timezone = :pst
 MyClass.timezone           # => :pst
 ```
 
-The `configuration_class_accessor` method makes sure that subclasses which have defined
+The `config_class_attribute` method makes sure that subclasses which have defined
 the class attribute will not affect the parent class's value of that configuration. For 
 example:
 
 ```ruby
 class ParentClass
-  configuration_class_accessor :time_zone
+  config_class_attribute :time_zone
   self.time_zone = :utc
 end
 

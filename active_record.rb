@@ -2,7 +2,7 @@ require '~/application_model_example/application_model'
 
 module ActiveRecord
   class Base
-    def self.configuration_accessor(name)
+    def self.config_mattr_accessor(name)
       class_eval do
         define_singleton_method("#{name}=") do |val|
           ActiveRecord::ApplicationModel.config.set(name, val)
@@ -14,7 +14,7 @@ module ActiveRecord
       end
     end
 
-    def self.configuration_class_accessor(name)
+    def self.config_class_attribute(name)
       base_class = self
       class_eval do
         define_singleton_method("#{name}=") do |val|
@@ -29,8 +29,8 @@ module ActiveRecord
       end
     end
 
-    configuration_class_accessor :default_timezone
-    configuration_accessor :table_name_prefix
+    config_class_attribute :default_timezone
+    config_mattr_accessor :table_name_prefix
     self.default_timezone = 10
     self.table_name_prefix = :john
   end

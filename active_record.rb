@@ -1,33 +1,9 @@
 require '~/application_model_example/application_model'
+require '~/application_model_example/config_accessors'
 
 module ActiveRecord
   class Base
-    def self.config_mattr_accessor(name)
-      class_eval do
-        define_singleton_method("#{name}=") do |val|
-          ActiveRecord::ApplicationModel.config.set(name, val)
-        end
-
-        define_singleton_method(name) do
-          ActiveRecord::ApplicationModel.config.get(name)
-        end
-      end
-    end
-
-    def self.config_class_attribute(name)
-      base_class = self
-      class_eval do
-        define_singleton_method("#{name}=") do |val|
-          subclass = ( self == base_class ? nil : self )
-          ActiveRecord::ApplicationModel.config.set(name, val, subclass: subclass)
-        end
-
-        define_singleton_method(name) do
-          subclass = ( self == base_class ? nil : self )
-          ActiveRecord::ApplicationModel.config.get(name, subclass: subclass)
-        end
-      end
-    end
+    include ActiveSupport::ConfigAccessors
 
     config_class_attribute :default_timezone
     config_mattr_accessor :table_name_prefix

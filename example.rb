@@ -14,20 +14,27 @@ require 'minitest/autorun'
 # the empty string when not inside either of these two modules.
 class ApplicationModelTest < MiniTest::Unit::TestCase
   module LegacyModule
-    ActiveRecord::ApplicationModel.configs_from(LegacyModule)
-    ActiveRecord::ApplicationModel.table_name_prefix = "legacy"
+    class LegacyApplicationModel < ActiveRecord::ApplicationModel
+      configs_from(LegacyModule)
+
+      self.table_name_prefix = "legacy"
+    end
+
+    p ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
   end
 
   module NewModule
-    ActiveRecord::ApplicationModel.configs_from(NewModule)
-    ActiveRecord::ApplicationModel.table_name_prefix = "new"
+    class NewApplicationModel < ActiveRecord::ApplicationModel
+      configs_from(NewModule)
+
+      self.table_name_prefix = "new"
+    end
   end
 
   ActiveRecord::ApplicationModel.table_name_prefix = ""
 
-  def test_correct_name_prefixes
+  def test_default_prefix
     assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
-    assert_equal "legacy", LegacyModule.instance_exec { ActiveRecord::ApplicationModel.table_name_prefix }
-    assert_equal "new", NewModule.instance_exec { ActiveRecord::ApplicationModel.table_name_prefix }
   end
 end
+

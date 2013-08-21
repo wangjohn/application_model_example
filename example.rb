@@ -1,66 +1,43 @@
-require '~/rails/activerecord/lib/active_record'
-require '~/rails/activesupport/lib/active_support'
+require 'active_record'
+require 'active_support'
 require 'minitest/autorun'
 
-module LegacyModule
-  class LegacyApplicationModel < ActiveRecord::ApplicationModel
-    configs_from(LegacyModule)
-  end
-
-  class LegacyApplicationModelTest < MiniTest::Unit::TestCase
-    def setup
-      LegacyApplicationModel.table_name_prefix = "legacy"
-    end
-
-    def test_default_prefix
-      assert_equal "legacy", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-
-    def test_changing_prefix_using_constant
-      LegacyApplicationModel.table_name_prefix = "hello"
-      assert_equal "hello", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-
-    def test_setting_prefix
-      ActiveRecord::ApplicationModel.set_config("table_name_prefix", "noooo", self)
-      assert_equal "noooo", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-  end
+class LegacyApplicationModel < ActiveRecord::ApplicationModel
 end
 
-module NewModule
-  class NewApplicationModel < ActiveRecord::ApplicationModel
-    configs_from(NewModule)
-  end
-
-  class NewApplicationModelTest < MiniTest::Unit::TestCase
-    def setup
-      NewApplicationModel.table_name_prefix = "new"
-    end
-
-    def test_default_prefix
-      assert_equal "new", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-
-    def test_changing_prefix_using_constant
-      NewApplicationModel.table_name_prefix = "hello"
-      assert_equal "hello", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-
-    def test_setting_prefix
-      ActiveRecord::ApplicationModel.set_config("table_name_prefix", "hihoo", self)
-      assert_equal "hihoo", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
-    end
-  end
+class NewApplicationModel < ActiveRecord::ApplicationModel
 end
 
 class ApplicationModelTest < MiniTest::Unit::TestCase
-  def test_default_prefix
-    assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
+  def test_default_prefix1
+    ActiveRecord::Base.table_name_prefix = "base"
+    assert_equal "base", LegacyApplicationModel.table_name_prefix
+    assert_equal "base", NewApplicationModel.table_name_prefix
+    assert_equal "base", ActiveRecord::ApplicationModel.table_name_prefix
+    assert_equal "base", ActiveRecord::Base.table_name_prefix
   end
 
-  def test_default_prefix_with_get_config
-    assert_equal "", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
+  def test_default_prefix2
+    ActiveRecord::ApplicationModel.table_name_prefix = "application_model"
+    assert_equal "application_model", LegacyApplicationModel.table_name_prefix
+    assert_equal "application_model", NewApplicationModel.table_name_prefix
+    assert_equal "application_model", ActiveRecord::ApplicationModel.table_name_prefix
+    assert_equal "", ActiveRecord::Base.table_name_prefix
+  end
+
+  def test_default_prefix3
+    NewApplicationModel.table_name_prefix = "new_application_model"
+    assert_equal "", LegacyApplicationModel.table_name_prefix
+    assert_equal "new_application_model", NewApplicationModel.table_name_prefix
+    assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
+    assert_equal "", ActiveRecord::Base.table_name_prefix
+  end
+
+  def test_default_prefix4
+    LegacyApplicationModel.table_name_prefix = "legacy_application_model"
+    assert_equal "legacy_application_model", LegacyApplicationModel.table_name_prefix
+    assert_equal "", NewApplicationModel.table_name_prefix
+    assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
+    assert_equal "", ActiveRecord::Base.table_name_prefix
   end
 end
-

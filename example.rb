@@ -58,5 +58,9 @@ class ApplicationModelTest < MiniTest::Unit::TestCase
   def test_default_prefix
     assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
   end
+
+  def test_default_prefix_with_get_config
+    assert_equal "", ActiveRecord::ApplicationModel.get_config("table_name_prefix", self)
+  end
 end
 

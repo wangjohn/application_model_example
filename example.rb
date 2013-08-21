@@ -13,22 +13,21 @@ require 'minitest/autorun'
 # the <tt>NewModule</tt>, the prefix should be "new". Otherwise, the default prefix is
 # the empty string when not inside either of these two modules.
 class ApplicationModelTest < MiniTest::Unit::TestCase
-  p ActiveRecord::ApplicationModel
   module LegacyModule
-    ApplicationModel.configs_from(LegacyModule)
-    ApplicationModel.table_name_prefix = "legacy"
+    ActiveRecord::ApplicationModel.configs_from(LegacyModule)
+    ActiveRecord::ApplicationModel.table_name_prefix = "legacy"
   end
 
   module NewModule
-    ApplicationModel.configs_from(NewModule)
-    ApplicationModel.table_name_prefix = "new"
+    ActiveRecord::ApplicationModel.configs_from(NewModule)
+    ActiveRecord::ApplicationModel.table_name_prefix = "new"
   end
 
-  ApplicationModel.table_name_prefix = ""
+  ActiveRecord::ApplicationModel.table_name_prefix = ""
 
   def test_correct_name_prefixes
-    assert_equal "", ApplicationModel.table_name_prefix
-    assert_equal "legacy", LegacyModule.instance_exec { ApplicationModel.table_name_prefix }
-    assert_equal "new", NewModule.instance_exec { ApplicationModel.table_name_prefix }
+    assert_equal "", ActiveRecord::ApplicationModel.table_name_prefix
+    assert_equal "legacy", LegacyModule.instance_exec { ActiveRecord::ApplicationModel.table_name_prefix }
+    assert_equal "new", NewModule.instance_exec { ActiveRecord::ApplicationModel.table_name_prefix }
   end
 end

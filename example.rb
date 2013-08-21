@@ -1,4 +1,5 @@
-require 'active_record'
+require '~/rails/activerecord/lib/active_record'
+require '~/rails/activesupport/lib/active_support'
 require 'minitest/autorun'
 
 # In this use case, there are two modules, <tt>LegacyModule</tt> and <tt>NewModule</tt>
@@ -12,25 +13,22 @@ require 'minitest/autorun'
 # the <tt>NewModule</tt>, the prefix should be "new". Otherwise, the default prefix is
 # the empty string when not inside either of these two modules.
 class ApplicationModelTest < MiniTest::Unit::TestCase
+  p ActiveRecord::ApplicationModel
   module LegacyModule
-    class LegacyDatabase < ActiveRecord::Base
-    end
-
-    ActiveRecord::Base.table_name_prefix = "legacy"
+    ApplicationModel.configs_from(LegacyModule)
+    ApplicationModel.table_name_prefix = "legacy"
   end
 
   module NewModule
-    class NewDatabase < ActiveRecord::Base
-    end
-
-    ActiveRecord::Base.table_name_prefix = "new"
+    ApplicationModel.configs_from(NewModule)
+    ApplicationModel.table_name_prefix = "new"
   end
 
-  ActiveRecord::Base.table_name_prefix = ""
+  ApplicationModel.table_name_prefix = ""
 
   def test_correct_name_prefixes
-    assert_equal "", ActiveRecord::Base.table_name_prefix
-    assert_equal "legacy", LegacyModule.instance_exec { ActiveRecord::Base.table_name_prefix }
-    assert_equal "new", NewModule.instance_exec { ActiveRecord::Base.table_name_prefix }
+    assert_equal "", ApplicationModel.table_name_prefix
+    assert_equal "legacy", LegacyModule.instance_exec { ApplicationModel.table_name_prefix }
+    assert_equal "new", NewModule.instance_exec { ApplicationModel.table_name_prefix }
   end
 end
